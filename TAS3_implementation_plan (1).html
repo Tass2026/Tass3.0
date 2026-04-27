@@ -1,0 +1,746 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans, sans-serif); }
+
+.plan-header {
+  padding: 2rem 1.5rem 1.5rem;
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+  text-align: center;
+}
+.plan-header h1 {
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  letter-spacing: -0.3px;
+}
+.plan-header p {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  margin-top: 6px;
+}
+
+.tabs {
+  display: flex;
+  overflow-x: auto;
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+  padding: 0 1rem;
+  gap: 4px;
+}
+.tab {
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  border: none;
+  background: none;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: color 0.15s;
+}
+.tab.active {
+  color: var(--color-text-primary);
+  border-bottom-color: var(--color-text-primary);
+}
+.tab:hover:not(.active) { color: var(--color-text-primary); }
+
+.content { padding: 1.25rem 1.5rem; }
+
+.section { display: none; }
+.section.active { display: block; }
+
+/* Timeline */
+.phase {
+  margin-bottom: 1.5rem;
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-lg, 12px);
+  overflow: hidden;
+}
+.phase-header {
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.phase-badge {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.p1 .phase-header { background: #EAF3DE; }
+.p1 .phase-badge { background: #639922; color: #EAF3DE; }
+.p2 .phase-header { background: #FAEEDA; }
+.p2 .phase-badge { background: #BA7517; color: #FAEEDA; }
+.p3 .phase-header { background: #FAECE7; }
+.p3 .phase-badge { background: #993C1D; color: #FAECE7; }
+.p4 .phase-header { background: #E6F1FB; }
+.p4 .phase-badge { background: #185FA5; color: #E6F1FB; }
+
+@media (prefers-color-scheme: dark) {
+  .p1 .phase-header { background: #173404; }
+  .p1 .phase-badge { background: #3B6D11; color: #C0DD97; }
+  .p2 .phase-header { background: #412402; }
+  .p2 .phase-badge { background: #854F0B; color: #FAC775; }
+  .p3 .phase-header { background: #4A1B0C; }
+  .p3 .phase-badge { background: #993C1D; color: #F5C4B3; }
+  .p4 .phase-header { background: #042C53; }
+  .p4 .phase-badge { background: #185FA5; color: #B5D4F4; }
+}
+
+.phase-title { font-size: 15px; font-weight: 500; color: var(--color-text-primary); }
+.phase-dates { font-size: 12px; color: var(--color-text-secondary); margin-left: auto; }
+.phase-tasks { padding: 12px 16px; display: flex; flex-direction: column; gap: 8px; }
+.task-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+.task-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+.dot-green { background: #639922; }
+.dot-amber { background: #BA7517; }
+.dot-coral { background: #993C1D; }
+.dot-blue { background: #185FA5; }
+
+/* Team */
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 1.5rem;
+}
+.team-card {
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-lg, 12px);
+  padding: 14px;
+}
+.team-dept {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  margin-bottom: 8px;
+}
+.team-head {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 10px;
+}
+.role-list { list-style: none; }
+.role-list li {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  padding: 3px 0;
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.role-list li:last-child { border-bottom: none; }
+.role-count {
+  margin-left: auto;
+  font-size: 11px;
+  background: var(--color-background-secondary);
+  padding: 1px 6px;
+  border-radius: 10px;
+  color: var(--color-text-secondary);
+}
+
+/* Funding */
+.funding-bar {
+  margin-bottom: 1.5rem;
+}
+.fund-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.fund-label { font-size: 13px; color: var(--color-text-primary); min-width: 140px; }
+.fund-bar-wrap { flex: 1; background: var(--color-background-secondary); border-radius: 4px; height: 8px; overflow: hidden; }
+.fund-bar-fill { height: 100%; border-radius: 4px; }
+.fund-amt { font-size: 12px; color: var(--color-text-secondary); min-width: 70px; text-align: right; }
+
+.budget-total {
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-lg, 12px);
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+.budget-total span:first-child { font-size: 14px; font-weight: 500; color: var(--color-text-primary); }
+.budget-total span:last-child { font-size: 20px; font-weight: 500; color: var(--color-text-primary); }
+
+/* Recruitment */
+.recruit-steps {
+  counter-reset: steps;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 1.5rem;
+}
+.recruit-step {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.step-num {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--color-background-secondary);
+  border: 0.5px solid var(--color-border-tertiary);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 500;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.step-body { flex: 1; }
+.step-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+.step-desc { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; }
+
+/* Grant */
+.grant-criteria {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin-bottom: 1.5rem;
+}
+.criterion {
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-md, 8px);
+  padding: 12px;
+}
+.criterion-icon { font-size: 16px; margin-bottom: 6px; }
+.criterion-label { font-size: 12px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+.criterion-desc { font-size: 11px; color: var(--color-text-secondary); line-height: 1.5; }
+
+/* Numbers tracker */
+.numbers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+  margin-bottom: 1.5rem;
+}
+.num-card {
+  background: var(--color-background-secondary);
+  border-radius: var(--border-radius-md, 8px);
+  padding: 14px 12px;
+  text-align: center;
+}
+.num-value { font-size: 24px; font-weight: 500; color: var(--color-text-primary); }
+.num-label { font-size: 11px; color: var(--color-text-secondary); margin-top: 4px; }
+
+.section-subtitle {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+</style>
+
+<h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">African Students Summit 3.0 — Full Implementation Plan for 1,000 attendees in September 2026</h2>
+
+<div class="plan-header">
+  <h1>African Students Summit 3.0 — The Forge</h1>
+  <p>Full implementation plan · 1,000+ students · Uni Abuja · September 2026</p>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab('timeline')">Timeline</button>
+  <button class="tab" onclick="showTab('team')">Team structure</button>
+  <button class="tab" onclick="showTab('funding')">Funding & budget</button>
+  <button class="tab" onclick="showTab('recruitment')">Campus recruitment</button>
+  <button class="tab" onclick="showTab('grant')">Grant program</button>
+  <button class="tab" onclick="showTab('numbers')">1,000 student plan</button>
+</div>
+
+<div class="content">
+
+  <!-- TIMELINE -->
+  <div id="timeline" class="section active">
+    <div class="phase p1">
+      <div class="phase-header">
+        <span class="phase-badge">Phase 1</span>
+        <span class="phase-title">Foundation & team build</span>
+        <span class="phase-dates">Now → end of May</span>
+      </div>
+      <div class="phase-tasks">
+        <div class="task-item"><div class="task-dot dot-green"></div><span>Formally constitute The Forge — assign HODs for each department with clear mandates</span></div>
+        <div class="task-item"><div class="task-dot dot-green"></div><span>Submit venue application to Uni Abuja management (auditorium/main hall — target 1,200 capacity)</span></div>
+        <div class="task-item"><div class="task-dot dot-green"></div><span>Register the event / secure official student union endorsement on campus</span></div>
+        <div class="task-item"><div class="task-dot dot-green"></div><span>Launch Forge internal comms (WhatsApp group + Notion workspace for task tracking)</span></div>
+        <div class="task-item"><div class="task-dot dot-green"></div><span>Draft sponsorship deck and grant framework documents</span></div>
+        <div class="task-item"><div class="task-dot dot-green"></div><span>Build event brand identity — logo, colour palette, typography, tone of voice</span></div>
+        <div class="task-item"><div class="task-dot dot-green"></div><span>Set up social media accounts (Instagram, X/Twitter, LinkedIn, TikTok)</span></div>
+      </div>
+    </div>
+
+    <div class="phase p2">
+      <div class="phase-header">
+        <span class="phase-badge">Phase 2</span>
+        <span class="phase-title">Funding, speakers & pre-hype</span>
+        <span class="phase-dates">June → mid-July</span>
+      </div>
+      <div class="phase-tasks">
+        <div class="task-item"><div class="task-dot dot-amber"></div><span>Launch sponsor outreach — tier A corps (Access Bank, MTN, Zenith, Flutterwave, Nestlé Nigeria) and tier B local businesses</span></div>
+        <div class="task-item"><div class="task-dot dot-amber"></div><span>Apply for youth development and innovation grants (Tony Elumelu Foundation, NITDA, Fate Foundation)</span></div>
+        <div class="task-item"><div class="task-dot dot-amber"></div><span>Confirm keynote speakers and panellists — send invitations with clear briefs</span></div>
+        <div class="task-item"><div class="task-dot dot-amber"></div><span>Open grant applications for the empowerment program (innovators with proof of concept)</span></div>
+        <div class="task-item"><div class="task-dot dot-amber"></div><span>Host 2–3 mini campus events at Uni Abuja to warm up audience and grow community</span></div>
+        <div class="task-item"><div class="task-dot dot-amber"></div><span>Launch early-bird registration page — gamified referral system (each registrant gets a referral code)</span></div>
+        <div class="task-item"><div class="task-dot dot-amber"></div><span>Weekly social media content calendar begins — consistent posting on all channels</span></div>
+        <div class="task-item"><div class="task-dot dot-amber"></div><span>Identify and onboard campus ambassadors across UNIABUJA faculties and partner universities (ABUAD, BSU, NDA, etc.)</span></div>
+      </div>
+    </div>
+
+    <div class="phase p3">
+      <div class="phase-header">
+        <span class="phase-badge">Phase 3</span>
+        <span class="phase-title">Full mobilisation</span>
+        <span class="phase-dates">Mid-July → August</span>
+      </div>
+      <div class="phase-tasks">
+        <div class="task-item"><div class="task-dot dot-coral"></div><span>Announce confirmed speakers publicly — use speaker reveal strategy (one per week) to sustain buzz</span></div>
+        <div class="task-item"><div class="task-dot dot-coral"></div><span>Finalise venue logistics — seating, AV, power backup, branding of hall, access control</span></div>
+        <div class="task-item"><div class="task-dot dot-coral"></div><span>Shortlist and announce grant recipients — build anticipation around their stories</span></div>
+        <div class="task-item"><div class="task-dot dot-coral"></div><span>Produce event promo video, speaker teaser clips, behind-the-scenes Forge content</span></div>
+        <div class="task-item"><div class="task-dot dot-coral"></div><span>Close general registration — target 1,200 to allow for 15–20% no-show buffer</span></div>
+        <div class="task-item"><div class="task-dot dot-coral"></div><span>Brief all volunteers — roles, protocols, emergency contacts, event flow</span></div>
+        <div class="task-item"><div class="task-dot dot-coral"></div><span>Conduct full tech rehearsal and stage run-through with all speakers confirmed</span></div>
+      </div>
+    </div>
+
+    <div class="phase p4">
+      <div class="phase-header">
+        <span class="phase-badge">Phase 4</span>
+        <span class="phase-title">Summit week & post-event</span>
+        <span class="phase-dates">September</span>
+      </div>
+      <div class="phase-tasks">
+        <div class="task-item"><div class="task-dot dot-blue"></div><span>D-1: Set up venue, full dry run with volunteers, media check-in, speaker briefings</span></div>
+        <div class="task-item"><div class="task-dot dot-blue"></div><span>Summit day: live social coverage, real-time photo/video, MC-led programme with tight timekeeping</span></div>
+        <div class="task-item"><div class="task-dot dot-blue"></div><span>Grant disbursement ceremony — highlight recipients publicly on stage</span></div>
+        <div class="task-item"><div class="task-dot dot-blue"></div><span>Post-event: release recap video within 48 hours, social highlights, attendee feedback form</span></div>
+        <div class="task-item"><div class="task-dot dot-blue"></div><span>Media coverage — distribute press release to media partners and campus press clubs</span></div>
+        <div class="task-item"><div class="task-dot dot-blue"></div><span>Sponsor fulfilment report — deliver promised deliverables, set up relationship for future editions</span></div>
+        <div class="task-item"><div class="task-dot dot-blue"></div><span>Build post-summit community — Telegram/WhatsApp group, newsletter, alumni network for TAS 4.0 pipeline</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TEAM -->
+  <div id="team" class="section">
+    <p class="section-subtitle">The Forge — department heads + roles needed</p>
+    <div class="team-grid">
+      <div class="team-card">
+        <div class="team-dept">Executive</div>
+        <div class="team-head">Summit Director</div>
+        <ul class="role-list">
+          <li>Director General <span class="role-count">1</span></li>
+          <li>Deputy Director <span class="role-count">1</span></li>
+          <li>Secretary / Chief of Staff <span class="role-count">1</span></li>
+        </ul>
+      </div>
+      <div class="team-card">
+        <div class="team-dept">Marketing & Comms</div>
+        <div class="team-head">Brand & Growth</div>
+        <ul class="role-list">
+          <li>Marketing lead <span class="role-count">1</span></li>
+          <li>Social media managers <span class="role-count">2</span></li>
+          <li>Graphic designers <span class="role-count">2</span></li>
+          <li>Copywriter <span class="role-count">1</span></li>
+          <li>PR & media officer <span class="role-count">1</span></li>
+        </ul>
+      </div>
+      <div class="team-card">
+        <div class="team-dept">Content & Media</div>
+        <div class="team-head">Video & Storytelling</div>
+        <ul class="role-list">
+          <li>Content lead <span class="role-count">1</span></li>
+          <li>Videographer / Editor <span class="role-count">2</span></li>
+          <li>Photographer <span class="role-count">2</span></li>
+          <li>Live stream operator <span class="role-count">1</span></li>
+          <li>Content creators (reels/shorts) <span class="role-count">2</span></li>
+        </ul>
+      </div>
+      <div class="team-card">
+        <div class="team-dept">Programs</div>
+        <div class="team-head">Sessions & Speakers</div>
+        <ul class="role-list">
+          <li>Programs lead <span class="role-count">1</span></li>
+          <li>Speaker liaison <span class="role-count">1</span></li>
+          <li>MC / facilitator <span class="role-count">2</span></li>
+          <li>Agenda designer <span class="role-count">1</span></li>
+        </ul>
+      </div>
+      <div class="team-card">
+        <div class="team-dept">Partnerships</div>
+        <div class="team-head">Sponsorship & Grants</div>
+        <ul class="role-list">
+          <li>Partnerships lead <span class="role-count">1</span></li>
+          <li>Sponsor relations officers <span class="role-count">2</span></li>
+          <li>Grant manager <span class="role-count">1</span></li>
+          <li>Finance / treasury <span class="role-count">1</span></li>
+        </ul>
+      </div>
+      <div class="team-card">
+        <div class="team-dept">Logistics & Admin</div>
+        <div class="team-head">Operations</div>
+        <ul class="role-list">
+          <li>Logistics lead <span class="role-count">1</span></li>
+          <li>Venue coordinator <span class="role-count">1</span></li>
+          <li>Registration / accreditation <span class="role-count">3</span></li>
+          <li>Volunteer coordinator <span class="role-count">1</span></li>
+          <li>Day-of volunteers <span class="role-count">20+</span></li>
+        </ul>
+      </div>
+      <div class="team-card">
+        <div class="team-dept">Tech</div>
+        <div class="team-head">Digital & AV</div>
+        <ul class="role-list">
+          <li>Tech lead <span class="role-count">1</span></li>
+          <li>Website / landing page dev <span class="role-count">1</span></li>
+          <li>AV technician <span class="role-count">2</span></li>
+          <li>Registration system admin <span class="role-count">1</span></li>
+        </ul>
+      </div>
+      <div class="team-card">
+        <div class="team-dept">Community</div>
+        <div class="team-head">Campus Ambassadors</div>
+        <ul class="role-list">
+          <li>Community lead <span class="role-count">1</span></li>
+          <li>Campus ambassadors (UNIABUJA) <span class="role-count">10</span></li>
+          <li>Partner uni reps <span class="role-count">8–10</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- FUNDING -->
+  <div id="funding" class="section">
+    <p class="section-subtitle">Estimated budget & funding mix</p>
+    <div class="budget-total">
+      <span>Total target budget</span>
+      <span>₦15–25M</span>
+    </div>
+    <div class="funding-bar">
+      <div class="fund-item">
+        <span class="fund-label">Corporate sponsors (tier A)</span>
+        <div class="fund-bar-wrap"><div class="fund-bar-fill" style="width:45%;background:#185FA5;"></div></div>
+        <span class="fund-amt">₦7–10M</span>
+      </div>
+      <div class="fund-item">
+        <span class="fund-label">SME / local sponsors (tier B)</span>
+        <div class="fund-bar-wrap"><div class="fund-bar-fill" style="width:18%;background:#3B8BD0;"></div></div>
+        <span class="fund-amt">₦2–4M</span>
+      </div>
+      <div class="fund-item">
+        <span class="fund-label">Grants (TEF, NITDA, Fate)</span>
+        <div class="fund-bar-wrap"><div class="fund-bar-fill" style="width:20%;background:#639922;"></div></div>
+        <span class="fund-amt">₦3–5M</span>
+      </div>
+      <div class="fund-item">
+        <span class="fund-label">Registration fees (optional)</span>
+        <div class="fund-bar-wrap"><div class="fund-bar-fill" style="width:8%;background:#BA7517;"></div></div>
+        <span class="fund-amt">₦0.5–1M</span>
+      </div>
+      <div class="fund-item">
+        <span class="fund-label">In-kind (venue, catering, AV)</span>
+        <div class="fund-bar-wrap"><div class="fund-bar-fill" style="width:10%;background:#993C1D;"></div></div>
+        <span class="fund-amt">₦1–2M equiv.</span>
+      </div>
+    </div>
+
+    <p class="section-subtitle" style="margin-top:1.5rem;">Key spend areas</p>
+    <div class="phase" style="margin-bottom:12px;">
+      <div class="phase-tasks">
+        <div class="task-item"><div class="task-dot dot-blue"></div><span><strong>Venue & logistics:</strong> Hall hire, setup, power/generator, signage, furniture — ₦2–4M</span></div>
+        <div class="task-item"><div class="task-dot dot-blue"></div><span><strong>Grant fund (disbursed on stage):</strong> Awards to 3–5 innovators — ₦2–5M total pool</span></div>
+        <div class="task-item"><div class="task-dot dot-blue"></div><span><strong>Marketing & production:</strong> Printing, social ads, event video, branding — ₦1.5–3M</span></div>
+        <div class="task-item"><div class="task-dot dot-blue"></div><span><strong>Speakers (travel, accommodation):</strong> For out-of-Abuja speakers — ₦1–2M</span></div>
+        <div class="task-item"><div class="task-dot dot-blue"></div><span><strong>Catering / refreshments:</strong> For 1,000+ attendees (even light) — ₦1.5–3M</span></div>
+        <div class="task-item"><div class="task-dot dot-blue"></div><span><strong>AV & streaming equipment:</strong> PA system, screens, camera, livestream rig — ₦1–2M</span></div>
+        <div class="task-item"><div class="task-dot dot-blue"></div><span><strong>Team operational costs:</strong> Internal coordination, transport, contingency — ₦0.5–1M</span></div>
+      </div>
+    </div>
+
+    <p class="section-subtitle" style="margin-top:1.5rem;">Sponsor tiers</p>
+    <div class="team-grid">
+      <div class="team-card" style="border-top:3px solid #D4AF37;">
+        <div class="team-dept">Gold — Title sponsor</div>
+        <div class="team-head">₦5M+</div>
+        <ul class="role-list">
+          <li>Name on summit title</li>
+          <li>Stage branding, MC mention</li>
+          <li>5-min keynote slot</li>
+          <li>All digital + print assets</li>
+        </ul>
+      </div>
+      <div class="team-card" style="border-top:3px solid #A8A9AD;">
+        <div class="team-dept">Silver — Supporting</div>
+        <div class="team-head">₦2–4M</div>
+        <ul class="role-list">
+          <li>Banner & roll-up branding</li>
+          <li>Digital mentions + posts</li>
+          <li>Exhibition space</li>
+        </ul>
+      </div>
+      <div class="team-card" style="border-top:3px solid #CD7F32;">
+        <div class="team-dept">Bronze — Community</div>
+        <div class="team-head">₦500K–1.5M</div>
+        <ul class="role-list">
+          <li>Logo on materials</li>
+          <li>Social media mentions</li>
+          <li>Exhibition table</li>
+        </ul>
+      </div>
+      <div class="team-card" style="border-top:3px solid #185FA5;">
+        <div class="team-dept">In-kind partner</div>
+        <div class="team-head">Products / Services</div>
+        <ul class="role-list">
+          <li>Catering, AV, printing</li>
+          <li>Accommodation, transport</li>
+          <li>Tech tools, software</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAMPUS RECRUITMENT -->
+  <div id="recruitment" class="section">
+    <p class="section-subtitle">How to reach 1,000 students — even starting from zero</p>
+    <div class="recruit-steps">
+      <div class="recruit-step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Secure official endorsement first</div>
+          <div class="step-desc">Get the Uni Abuja Students Union to officially recognise and co-sign TAS 3.0. This gives you access to their mailing lists, announcement boards, and their credibility with students who don't yet know you. Visit the SUG office in week one.</div>
+        </div>
+      </div>
+      <div class="recruit-step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Build a faculty ambassador network</div>
+          <div class="step-desc">Identify 1–2 connected, respected students in each faculty (Law, Engineering, Social Sciences, Business, Medicine, Arts, etc.). These become your ground troops. They get personalised ambassador kits, a referral code, and a WhatsApp group with you. Each ambassador targets 50–80 students in their faculty = 500–800 from ambassadors alone.</div>
+        </div>
+      </div>
+      <div class="recruit-step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Host mini "Forge sessions" before the main event</div>
+          <div class="step-desc">Run 2–3 small community events in June/July: a panel discussion in a lecture hall, a workshop on building something in Africa, or even a movie screening + discussion. These pre-events are free, low-stakes, and build trust — people who attend these will show up in September and bring others.</div>
+        </div>
+      </div>
+      <div class="recruit-step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Expand to partner universities</div>
+          <div class="step-desc">Reach out to student leaders at NOUN, ABUAD, BSU, NDA, Nasarawa State University, and other Abuja-area campuses. Each partner uni can contribute 50–100 attendees. Coordinate group transport (bus hire) to remove the friction of getting to the venue.</div>
+        </div>
+      </div>
+      <div class="recruit-step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <div class="step-title">Run a referral-powered registration system</div>
+          <div class="step-desc">Every person who registers gets a unique referral link. Top 10 referrers get special recognition on the day — a badge, shoutout on stage, or a preferred seat. This turns every attendee into a recruiter. Target: each person brings 2 others on average.</div>
+        </div>
+      </div>
+      <div class="recruit-step">
+        <div class="step-num">6</div>
+        <div class="step-body">
+          <div class="step-title">Aggressive social media + content strategy</div>
+          <div class="step-desc">Post daily in August — countdowns, speaker reveals (one per week), behind-the-scenes Forge content, testimonials from TAS 1.0/2.0 attendees, grant recipient stories. Run Instagram and TikTok reels that are share-worthy — funny, bold, emotional. Consider a small paid ads budget targeting 18–30 year olds in Abuja on Instagram.</div>
+        </div>
+      </div>
+      <div class="recruit-step">
+        <div class="step-num">7</div>
+        <div class="step-body">
+          <div class="step-title">Physical campus presence</div>
+          <div class="step-desc">Put up posters and flyers in strategic spots (library, café, hostel corridors, lecture theatres). Station Forge members at peak traffic points (after morning lectures, during lunch) to talk to students directly and register them on the spot via a phone. Physical presence builds word-of-mouth in ways social media cannot.</div>
+        </div>
+      </div>
+      <div class="recruit-step">
+        <div class="step-num">8</div>
+        <div class="step-body">
+          <div class="step-title">Create a reason to bring a friend</div>
+          <div class="step-desc">Frame the summit as something you attend with your crew. "Bring a friend and both of you get priority seating." Design it so people feel social pressure — if everyone in their circle is going, FOMO does the recruitment work for you.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRANT PROGRAM -->
+  <div id="grant" class="section">
+    <p class="section-subtitle">The empowerment grant — beyond survival</p>
+    <div class="phase" style="margin-bottom:1rem;">
+      <div class="phase-tasks">
+        <div class="task-item"><div class="task-dot dot-coral"></div><span>The grant is not charity — it is fuel for people already in motion. Recipients must have a proof of concept and demonstrated traction in solving an African problem.</span></div>
+        <div class="task-item"><div class="task-dot dot-coral"></div><span>Target: 3–5 grant recipients per edition, publicised on stage and on all media channels.</span></div>
+        <div class="task-item"><div class="task-dot dot-coral"></div><span>Grant value: ₦200K–₦1M per recipient depending on funding raised (total pool ₦2–5M).</span></div>
+        <div class="task-item"><div class="task-dot dot-coral"></div><span>Recipients also receive 6 months of mentorship, connections to sponsors, and featured storytelling on TAS platforms.</span></div>
+      </div>
+    </div>
+
+    <p class="section-subtitle" style="margin-top:1rem;">Selection criteria</p>
+    <div class="grant-criteria">
+      <div class="criterion">
+        <div class="criterion-icon">📌</div>
+        <div class="criterion-label">Proof of concept</div>
+        <div class="criterion-desc">Working prototype, MVP, or documented evidence the idea functions.</div>
+      </div>
+      <div class="criterion">
+        <div class="criterion-icon">📈</div>
+        <div class="criterion-label">Traction</div>
+        <div class="criterion-desc">Real users, community uptake, partnerships, or revenue — even small.</div>
+      </div>
+      <div class="criterion">
+        <div class="criterion-icon">🌍</div>
+        <div class="criterion-label">African problem</div>
+        <div class="criterion-desc">Clearly addresses a documented challenge faced by Africans.</div>
+      </div>
+      <div class="criterion">
+        <div class="criterion-icon">📐</div>
+        <div class="criterion-label">Scale potential</div>
+        <div class="criterion-desc">Roadmap shows how additional funding directly accelerates impact.</div>
+      </div>
+      <div class="criterion">
+        <div class="criterion-icon">👤</div>
+        <div class="criterion-label">Student-led</div>
+        <div class="criterion-desc">Led by a current or recent (≤3 years) university student or graduate.</div>
+      </div>
+      <div class="criterion">
+        <div class="criterion-icon">🔁</div>
+        <div class="criterion-label">Long-term mindset</div>
+        <div class="criterion-desc">Founders demonstrate commitment beyond personal financial survival.</div>
+      </div>
+    </div>
+
+    <p class="section-subtitle" style="margin-top:1rem;">Grant timeline</p>
+    <div class="recruit-steps">
+      <div class="recruit-step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Applications open — June</div>
+          <div class="step-desc">Online application form (Notion or Google Form). Promote on all channels and through campus ambassadors. Accept video pitches (max 3 mins) + written summary.</div>
+        </div>
+      </div>
+      <div class="recruit-step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Screening — July</div>
+          <div class="step-desc">Forge programs team reviews all applications. Shortlist 10–15 candidates for virtual pitches to the selection panel (include a sponsor rep and external mentor).</div>
+        </div>
+      </div>
+      <div class="recruit-step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Finalists announced — August</div>
+          <div class="step-desc">Announce 5–8 finalists publicly. Build content around their stories — this is powerful marketing for the summit itself. Each finalist is a reason to attend.</div>
+        </div>
+      </div>
+      <div class="recruit-step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Live pitch & awards — Summit day, September</div>
+          <div class="step-desc">Finalists pitch on the main stage (5 mins each). Audience votes + panel decision. Awards ceremony is the emotional highlight of the summit — this moment must be filmed and shared everywhere.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1000 STUDENTS -->
+  <div id="numbers" class="section">
+    <p class="section-subtitle">The 1,000 student breakdown</p>
+    <div class="numbers-grid">
+      <div class="num-card">
+        <div class="num-value">1,200</div>
+        <div class="num-label">Registration target (20% buffer)</div>
+      </div>
+      <div class="num-card">
+        <div class="num-value">1,000</div>
+        <div class="num-label">Physical attendance goal</div>
+      </div>
+      <div class="num-card">
+        <div class="num-value">10+</div>
+        <div class="num-label">Campus ambassador schools</div>
+      </div>
+      <div class="num-card">
+        <div class="num-value">8–10</div>
+        <div class="num-label">Partner universities</div>
+      </div>
+      <div class="num-card">
+        <div class="num-value">20+</div>
+        <div class="num-label">Day-of volunteers</div>
+      </div>
+      <div class="num-card">
+        <div class="num-value">3–5</div>
+        <div class="num-label">Grant recipients</div>
+      </div>
+    </div>
+
+    <p class="section-subtitle" style="margin-top:1rem;">Where the 1,000 come from</p>
+    <div class="funding-bar" style="margin-bottom:0;">
+      <div class="fund-item">
+        <span class="fund-label">Uni Abuja (host campus)</span>
+        <div class="fund-bar-wrap"><div class="fund-bar-fill" style="width:40%;background:#185FA5;"></div></div>
+        <span class="fund-amt">~400</span>
+      </div>
+      <div class="fund-item">
+        <span class="fund-label">Partner universities</span>
+        <div class="fund-bar-wrap"><div class="fund-bar-fill" style="width:25%;background:#3B8BD0;"></div></div>
+        <span class="fund-amt">~250</span>
+      </div>
+      <div class="fund-item">
+        <span class="fund-label">Social media / general public</span>
+        <div class="fund-bar-wrap"><div class="fund-bar-fill" style="width:20%;background:#639922;"></div></div>
+        <span class="fund-amt">~200</span>
+      </div>
+      <div class="fund-item">
+        <span class="fund-label">Corporate / sponsor invitees</span>
+        <div class="fund-bar-wrap"><div class="fund-bar-fill" style="width:8%;background:#BA7517;"></div></div>
+        <span class="fund-amt">~80</span>
+      </div>
+      <div class="fund-item">
+        <span class="fund-label">Media, NGOs, alumni</span>
+        <div class="fund-bar-wrap"><div class="fund-bar-fill" style="width:7%;background:#993C1D;"></div></div>
+        <span class="fund-amt">~70</span>
+      </div>
+    </div>
+
+    <div class="phase" style="margin-top:1.25rem;">
+      <div class="phase-tasks">
+        <div class="task-item"><div class="task-dot dot-blue"></div><span><strong>Key rule:</strong> Always register 20% more than your capacity target — no-shows are real. Aim for 1,200 registrations to guarantee 1,000 through the door.</span></div>
+        <div class="task-item"><div class="task-dot dot-blue"></div><span><strong>On-day access control:</strong> Use a QR code ticketing system (free tools: Tix.Africa, Eventbrite Nigeria, or a custom Google Form with QR). Place 3–4 accreditation points to prevent bottlenecks.</span></div>
+        <div class="task-item"><div class="task-dot dot-blue"></div><span><strong>Livestream:</strong> Stream on YouTube or Instagram Live for those who cannot attend physically — this also creates social proof and FOMO that drives next year's physical attendance.</span></div>
+        <div class="task-item"><div class="task-dot dot-blue"></div><span><strong>Venue confirmation:</strong> The main hall at Uni Abuja (or the Nnamdi Azikiwe Library complex) typically holds 800–1,500. Confirm capacity and contingency overflow space with the university administration early — this is the most time-sensitive action item.</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function showTab(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
